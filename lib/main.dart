@@ -1,26 +1,39 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MaterialApp(home: Home()));
+import 'pages/home_page.dart';
+import 'theme/theme_provider.dart';
 
-class Home extends StatelessWidget {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('mn')],
+      path: 'assets/lang',
+      fallbackLocale: const Locale('en'),
+      child: ChangeNotifierProvider(
+        create: (_) => ThemeProvider(),
+        child: const MyApp(),
+      ),
+    ),
+  );
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('My First App'),
-        centerTitle: true,
-        backgroundColor: Colors.red[600],
-      ),
-      body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 20.0),
-        color: Colors.grey[400],
-        child: Text('HELLO'),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Text('click'),
-        backgroundColor: Colors.red,
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: Provider.of<ThemeProvider>(context).currentTheme,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      home: const HomePage(),
     );
   }
 }
